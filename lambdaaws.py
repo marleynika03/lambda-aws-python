@@ -8,7 +8,7 @@ def lambda_handler(event, context):
         # Parse dos dados recebidos
         body = json.loads(event['body'])
         
-        # Dados de conexão (configure via Environment Variables)
+        # Dados de conexão
         db_host = os.environ['DB_HOST']
         db_name = os.environ['DB_NAME']
         db_user = os.environ['DB_USER']
@@ -64,4 +64,5 @@ def lambda_handler(event, context):
                 'Access-Control-Allow-Origin': '*'
             },
             'body': json.dumps(f'Erro: {str(e)}')
+
         }
