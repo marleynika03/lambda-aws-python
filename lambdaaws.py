@@ -2,21 +2,27 @@ import json
 import psycopg2
 from datetime import datetime
 import os
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     try:
         # Parse dos dados recebidos
         body = json.loads(event['body'])
         
-        # Dados de conexão
-        db_host = os.environ['DB_HOST']
-        db_name = os.environ['DB_NAME']
-        db_user = os.environ['DB_USER']
-        db_password = os.environ['DB_PASSWORD']
+        # Dados de conexão CORRETO
+        db_host = os.environ['DB_HOST']  # Só o endereço: '0.tcp.sa.ngrok.io'
+        db_port = os.environ['DB_PORT']  # Porta: '14878'
+        db_name = os.environ['DB_NAME']  # Nome do DB: 'infoleak'
+        db_user = os.environ['DB_USER']  # Usuário: 'flaskdb'
+        db_password = os.environ['DB_PASSWORD']  # Senha: 'senha123'
         
-        # Conectar ao PostgreSQL
+        # Conectar ao PostgreSQL CORRETO
         conn = psycopg2.connect(
             host=db_host,
+            port=db_port,
             database=db_name,
             user=db_user,
             password=db_password,
@@ -57,6 +63,8 @@ def lambda_handler(event, context):
         }
         
     except Exception as e:
+        logger.error("ERRO CRÍTICO: %s", str(e))
+        logger.error("Evento que causou o erro: %s", json.dumps(event))
         return {
             'statusCode': 500,
             'headers': {
@@ -64,5 +72,4 @@ def lambda_handler(event, context):
                 'Access-Control-Allow-Origin': '*'
             },
             'body': json.dumps(f'Erro: {str(e)}')
-
         }
